@@ -1,39 +1,55 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"encoding/json"
+	"github.com/gofiber/fiber/v2"
+	"github.com/kainguyen/go-scrapper/internal/colly"
+)
 
 func main() {
-	//screenshot.CaptureYoutubeWebpage()
-	//screenshot.CaptureDevToWebpage()
-
-	//c := colly.NewCollector()
-	//
-	//// Before making a request print "Visiting ..."
-	//c.OnRequest(func(r *colly.Request) {
-	//	fmt.Println("Visiting", r.URL.String())
-	//})
-	//
-	//c.OnResponse(func(response *colly.Response) {
-	//	fmt.Println(string(response.Body))
-	//})
-	//
-	//// On every a element which has href attribute call callback
-	////c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-	////	link := e.Attr("href")
-	////	// Print link
-	////	fmt.Printf("Link found: %q -> %s\n", e.Text, link)
-	////	// Visit link found on page
-	////	// Only those links are visited which are in AllowedDomains
-	////	//c.Visit(e.Request.AbsoluteURL(link))
-	////})
-	//
-	//err := c.Visit("https://hackerspaces.org/")
-	//if err != nil {
-	//	return
-	//}
-
 	var app = fiber.New()
 
-	app.Get("")
+	app.Get("youtube/thumbnail", func(c *fiber.Ctx) error {
 
+		type Student struct {
+			Name string
+		}
+
+		student, err := json.Marshal(Student{
+			Name: "A",
+		})
+		if err != nil {
+			return err
+		}
+
+		return c.Send(student)
+	})
+
+	app.Post("youtube/thumbnail/upload", func(c *fiber.Ctx) error {
+		var colly = colly.NewColly()
+
+		type Body struct {
+			Url string
+		}
+
+		var _body = Body{}
+
+		err := json.Unmarshal(c.Body(), &_body)
+		if err != nil {
+			return err
+		}
+
+		colly.Crawler(_body.Url)
+		//
+		//fmt.Printf("%+v\n", crawler.Attr("src"))
+
+		type Response struct {
+			ImageUrl string
+		}
+
+		response, _ := json.Marshal(Response{})
+		return c.Send(response)
+	})
+
+	app.Listen(":3000")
 }
