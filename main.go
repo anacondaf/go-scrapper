@@ -1,55 +1,31 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/kainguyen/go-scrapper/internal/colly"
+	"log"
 )
+
+type BlogStruct struct {
+	Url string `json:"url"`
+}
 
 func main() {
 	var app = fiber.New()
+	var goColly = colly.NewColly()
 
-	app.Get("youtube/thumbnail", func(c *fiber.Ctx) error {
+	app.Post("/blogs", func(c *fiber.Ctx) error {
+		var url = BlogStruct{}
 
-		type Student struct {
-			Name string
-		}
-
-		student, err := json.Marshal(Student{
-			Name: "A",
-		})
+		err := c.BodyParser(&url)
 		if err != nil {
 			return err
 		}
 
-		return c.Send(student)
+		blog := goColly.VnExpressCrawler(url.Url)
+
+		return c.Status(fiber.StatusOK).JSON(blog)
 	})
 
-	app.Post("youtube/thumbnail/upload", func(c *fiber.Ctx) error {
-		var colly = colly.NewColly()
-
-		type Body struct {
-			Url string
-		}
-
-		var _body = Body{}
-
-		err := json.Unmarshal(c.Body(), &_body)
-		if err != nil {
-			return err
-		}
-
-		colly.Crawler(_body.Url)
-		//
-		//fmt.Printf("%+v\n", crawler.Attr("src"))
-
-		type Response struct {
-			ImageUrl string
-		}
-
-		response, _ := json.Marshal(Response{})
-		return c.Send(response)
-	})
-
-	app.Listen(":3000")
+	log.Fatalf("Error when running fiber app: %v", app.Listen(":3000"))
 }
