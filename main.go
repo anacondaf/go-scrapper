@@ -2,30 +2,22 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/kainguyen/go-scrapper/internal/colly"
+	controller "github.com/kainguyen/go-scrapper/src/core/handler/blog"
+	"github.com/kainguyen/go-scrapper/src/core/route/v1"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/webScraping"
 	"log"
 )
 
-type BlogStruct struct {
-	Url string `json:"url"`
-}
-
 func main() {
 	var app = fiber.New()
-	var goColly = colly.NewColly()
+	var goColly = webScraping.NewColly()
 
-	app.Post("/blogs", func(c *fiber.Ctx) error {
-		var url = BlogStruct{}
+	v1 := app.Group("/api/v1")
 
-		err := c.BodyParser(&url)
-		if err != nil {
-			return err
-		}
+	blogRouter := v1.Group("/blogs")
 
-		blog := goColly.VnExpressCrawler(url.Url)
-
-		return c.Status(fiber.StatusOK).JSON(blog)
-	})
+	var blogHandler = controller.NewBlogHandler(goColly)
+	route.BlogRoute(blogRouter, blogHandler)
 
 	log.Fatalf("Error when running fiber app: %v", app.Listen(":3000"))
 }
