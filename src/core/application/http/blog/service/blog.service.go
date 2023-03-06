@@ -6,6 +6,7 @@ import (
 )
 
 type BlogService struct {
+	scraper *webScraping.WebScraper `di.inject:"webScraper"`
 }
 
 type createPostRequest struct {
@@ -20,6 +21,6 @@ func (s *BlogService) CreatePost(c *fiber.Ctx) (webScraping.BlogContent, error) 
 		return webScraping.BlogContent{}, err
 	}
 
-	blog := webScraping.VnExpressCrawler(url.Url)
+	blog := s.scraper.VnExpressCrawler(url.Url)
 	return blog, nil
 }
