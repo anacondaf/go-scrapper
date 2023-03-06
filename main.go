@@ -1,15 +1,12 @@
 package main
 
 import (
-	"github.com/kainguyen/go-scrapper/src/core/application/api"
-	"github.com/kainguyen/go-scrapper/src/infrastructure/webScraping"
+	"github.com/kainguyen/go-scrapper/src/core/application/http"
 	"log"
 )
 
 func main() {
-	var goColly = webScraping.NewColly()
-
-	server, err := api.NewHttpServer(goColly)
+	server, err := http.NewHttpServer()
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
