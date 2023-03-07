@@ -3,10 +3,12 @@ package service
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/webScraping"
+	"gorm.io/gorm"
 )
 
 type BlogService struct {
 	scraper *webScraping.WebScraper `di.inject:"webScraper"`
+	db      *gorm.DB                `di.inject:"db"`
 }
 
 type createPostRequest struct {

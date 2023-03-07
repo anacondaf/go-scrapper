@@ -5,8 +5,10 @@ import (
 	"github.com/gocolly/colly"
 	"github.com/gofiber/fiber/v2"
 	"github.com/goioc/di"
+	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/blog"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/blog/service"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/persistence/db"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/webScraping"
 	"reflect"
 )
@@ -19,6 +21,20 @@ func init() {
 		scraper := webScraping.NewWebScraper(colly.AllowedDomains("vnexpress.net"))
 		return scraper, nil
 	})
+
+	_, err := di.RegisterBeanFactory("db", di.Singleton, func(context.Context) (interface{}, error) {
+		var newDB persistence.IDBConn = db.NewPostgresDB()
+
+		db, err := newDB.DBConn()
+		if err != nil {
+			return nil, err
+		}
+
+		return db, nil
+	})
+	if err != nil {
+		panic(err)
+	}
 
 	_ = di.InitializeContainer()
 }
