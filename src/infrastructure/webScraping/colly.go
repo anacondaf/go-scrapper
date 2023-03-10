@@ -3,6 +3,7 @@ package webScraping
 import (
 	"fmt"
 	"github.com/gocolly/colly"
+	"github.com/kainguyen/go-scrapper/src/config"
 	"log"
 )
 
@@ -15,8 +16,16 @@ type WebScraper struct {
 	*colly.Collector
 }
 
-func NewWebScraper(opts ...func(c *colly.Collector)) *WebScraper {
+func NewWebScraper(config *config.Config, opts ...func(c *colly.Collector)) *WebScraper {
 	collector := colly.NewCollector(opts...)
+
+	//storage := &postgres.Storage{
+	//	URI:          config.DBUrl,
+	//	VisitedTable: "colly_visited",
+	//	CookiesTable: "colly_cookies",
+	//}
+	//
+	//collector.SetStorage(storage)
 
 	return &WebScraper{collector}
 }

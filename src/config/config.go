@@ -1,8 +1,8 @@
 package config
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
-	"log"
 )
 
 type Config struct {
@@ -29,6 +29,6 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 
-	log.Println("Load config success")
+	fmt.Println("Load config success!")
 	return &config, nil
 }

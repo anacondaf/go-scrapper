@@ -24,7 +24,7 @@ func init() {
 	}
 
 	_, err = di.RegisterBeanFactory("webScraper", di.Singleton, func(context.Context) (interface{}, error) {
-		scraper := webScraping.NewWebScraper(colly.AllowedDomains("vnexpress.net"))
+		scraper := webScraping.NewWebScraper(config, colly.AllowedDomains("vnexpress.net"))
 		return scraper, nil
 	})
 	if err != nil {
