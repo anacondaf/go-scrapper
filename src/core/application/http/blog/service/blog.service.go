@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/webScraping"
 	"gorm.io/gorm"
@@ -16,6 +17,9 @@ type createPostRequest struct {
 }
 
 func (s *BlogService) CreatePost(c *fiber.Ctx) (webScraping.BlogContent, error) {
+
+	fmt.Printf("%+V\n", s.db)
+
 	var url = createPostRequest{}
 
 	err := c.BodyParser(&url)

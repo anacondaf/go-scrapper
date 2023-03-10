@@ -2,20 +2,21 @@ package db
 
 import (
 	"fmt"
+	"github.com/kainguyen/go-scrapper/src/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type PostgresDB struct{}
+type PostgresDB struct {
+	config *config.Config
+}
 
-func NewPostgresDB() *PostgresDB {
-	return &PostgresDB{}
+func NewPostgresDB(config *config.Config) *PostgresDB {
+	return &PostgresDB{config: config}
 }
 
 func (p PostgresDB) DBConn() (*gorm.DB, error) {
-	dsn := "host=localhost user=kai password=kai123 dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-
-	db, err := gorm.Open(postgres.New(postgres.Config{DSN: dsn}), &gorm.Config{})
+	db, err := gorm.Open(postgres.New(postgres.Config{DSN: p.config.DBUrl}), &gorm.Config{})
 	if err != nil {
 		fmt.Printf("Error when connect db: %v\n", err)
 		return nil, err
