@@ -15,13 +15,13 @@ type createPostRequest struct {
 	Url string `json:"url"`
 }
 
-func (s *BlogService) CreatePost(c *fiber.Ctx) (webScraping.BlogContent, error) {
+func (s *BlogService) CreatePost(c *fiber.Ctx) (webScraping.Post, error) {
 
 	var url = createPostRequest{}
 
 	err := c.BodyParser(&url)
 	if err != nil {
-		return webScraping.BlogContent{}, err
+		return webScraping.Post{}, err
 	}
 
 	blog := s.scraper.VnExpressCrawler(url.Url)

@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-type BlogContent struct {
+type Post struct {
 	Title  string
 	Images []string
 }
@@ -30,7 +30,7 @@ func NewWebScraper(config *config.Config, opts ...func(c *colly.Collector)) *Web
 	return &WebScraper{collector}
 }
 
-func (s *WebScraper) VnExpressCrawler(url string) BlogContent {
+func (s *WebScraper) VnExpressCrawler(url string) Post {
 	s.OnRequest(func(request *colly.Request) {
 		fmt.Println("Visiting", request.URL)
 	})
@@ -43,7 +43,7 @@ func (s *WebScraper) VnExpressCrawler(url string) BlogContent {
 		fmt.Println("Visited", r.Request.URL)
 	})
 
-	var blog = BlogContent{
+	var blog = Post{
 		Title:  "",
 		Images: []string{},
 	}
