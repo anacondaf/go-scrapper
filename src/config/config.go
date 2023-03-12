@@ -3,16 +3,24 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"gorm.io/gorm/schema"
 )
 
+type database struct {
+	ConnectionString string `mapstructure:"ConnectionString"`
+	GormConfig       struct {
+		NamingStrategy schema.NamingStrategy `mapstructure:"NamingStrategy"`
+	} `mapstructure:"GormConfig"`
+}
+
 type Config struct {
-	DBUrl string `mapstructure:"DB_URL"`
+	database `mapstructure:",squash"`
 }
 
 func LoadConfig(path string) (*Config, error) {
-	viper.AddConfigPath(path)
-	viper.SetConfigName("app")
-	viper.SetConfigType("env")
+	viper.AddConfigPath(fmt.Sprintf("%v/src/config", path))
+	viper.SetConfigName("database")
+	viper.SetConfigType("json")
 
 	viper.AutomaticEnv()
 
