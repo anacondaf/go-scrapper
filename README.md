@@ -36,6 +36,7 @@ go run main.go
 ## Features
 - [x] Written in Golang
 - [x] HTTP Framework - Go Fiber
+- [x] ORM - Gorm
 - [x] Supports PSQL, MongoDB
 - [x] Crawler Framework - Go Colly
 - [x] OpenAPI - Supports Client Service Generation
