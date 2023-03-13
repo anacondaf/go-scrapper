@@ -1,7 +1,9 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/kainguyen/go-scrapper/src/core/domain/models"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/webScraping"
 	"gorm.io/gorm"
 )
@@ -24,6 +26,23 @@ func (s *BlogService) CreatePost(c *fiber.Ctx) (webScraping.Post, error) {
 		return webScraping.Post{}, err
 	}
 
-	blog := s.scraper.VnExpressCrawler(url.Url)
-	return blog, nil
+	post := s.scraper.VnExpressCrawler(url.Url)
+
+	var postDTO = &models.Post{
+		Title: post.Title,
+		PostImages: []models.PostImages{
+			{Url: "Hihi"},
+			{Url: "Hoho"},
+		},
+	}
+
+	//for _, image := range post.Images {
+	//	postDTO.PostImages = append(postDTO.PostImages, models.PostImages{Url: image})
+	//}
+
+	s.db.Create(postDTO)
+
+	fmt.Printf("%+v\n", postDTO)
+
+	return post, nil
 }

@@ -13,7 +13,7 @@ func (h *Handler) CreatePost() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		blog, err := h.blogService.CreatePost(c)
 		if err != nil {
-			return nil
+			return err
 		}
 
 		return c.Status(fiber.StatusOK).JSON(blog)
