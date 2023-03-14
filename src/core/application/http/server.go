@@ -3,14 +3,14 @@ package http
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/goioc/di"
-	"github.com/kainguyen/go-scrapper/src/core/application/http/blog"
-	"github.com/kainguyen/go-scrapper/src/core/application/http/blog/service"
+	"github.com/kainguyen/go-scrapper/src/core/application/http/post"
+	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
 	"reflect"
 )
 
 func init() {
-	_, _ = di.RegisterBean("blogHandler", reflect.TypeOf((*blog.Handler)(nil)))
-	_, _ = di.RegisterBean("blogService", reflect.TypeOf((*service.BlogService)(nil)))
+	_, _ = di.RegisterBean("postHandler", reflect.TypeOf((*post.Handler)(nil)))
+	_, _ = di.RegisterBean("postService", reflect.TypeOf((*service.PostService)(nil)))
 }
 
 type HttpServer struct {
@@ -30,10 +30,11 @@ func (s *HttpServer) setupApp() {
 
 	v1 := app.Group("/api/v1")
 
-	blogRouter := v1.Group("blogs")
+	postRouter := v1.Group("posts")
 
-	var blogHandler = di.GetInstance("blogHandler").(*blog.Handler).CreatePost()
-	blogRouter.Post("/", blogHandler)
+	var postHandler = di.GetInstance("postHandler").(*post.Handler)
+	postRouter.Post("/", postHandler.CreatePost())
+	postRouter.Get("/", postHandler.GetPosts())
 
 	s.app = app
 }

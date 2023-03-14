@@ -1,9 +1,13 @@
-
-
 ###
-POST localhost:3000/api/v1/blogs
+
+POST localhost:3000/api/v1/posts
 Content-Type: application/json
 
 {
 "url": "https://vnexpress.net/messi-mbappe-giup-psg-thang-dam-marseille-4575108.html"
 }
+
+###
+
+GET localhost:3000/api/v1/posts
+Accept: application/json
