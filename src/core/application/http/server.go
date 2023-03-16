@@ -5,6 +5,7 @@ import (
 	"github.com/goioc/di"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
+	"github.com/kainguyen/go-scrapper/src/core/application/http/route"
 	"reflect"
 )
 
@@ -30,11 +31,7 @@ func (s *HttpServer) setupApp() {
 
 	v1 := app.Group("/api/v1")
 
-	postRouter := v1.Group("posts")
-
-	var postHandler = di.GetInstance("postHandler").(*post.Handler)
-	postRouter.Post("/", postHandler.CreatePost())
-	postRouter.Get("/", postHandler.GetPosts())
+	route.Route(v1)
 
 	s.app = app
 }
