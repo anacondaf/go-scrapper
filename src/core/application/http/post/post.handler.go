@@ -5,11 +5,11 @@ import (
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
 )
 
-type Handler struct {
+type PostHandler struct {
 	postService *service.PostService `di.inject:"postService"`
 }
 
-func (h *Handler) CreatePost() fiber.Handler {
+func (h *PostHandler) CreatePost() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		post, err := h.postService.CreatePost(c)
 		if err != nil {
@@ -20,7 +20,7 @@ func (h *Handler) CreatePost() fiber.Handler {
 	}
 }
 
-func (h *Handler) GetPosts() fiber.Handler {
+func (h *PostHandler) GetPosts() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		post, err := h.postService.GetPosts()
 

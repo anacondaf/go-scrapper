@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	_, _ = di.RegisterBean("postHandler", reflect.TypeOf((*post.Handler)(nil)))
+	_, _ = di.RegisterBean("postHandler", reflect.TypeOf((*post.PostHandler)(nil)))
 	_, _ = di.RegisterBean("postService", reflect.TypeOf((*service.PostService)(nil)))
 }
 
