@@ -8,7 +8,7 @@ import (
 )
 
 func Route(routeVer fiber.Router) {
-	var postHandler = di.GetInstance("postHandler").(*post.Handler)
+	var postHandler = di.GetInstance("postHandler").(*post.PostHandler)
 
 	postRouter := routeVer.Group("posts")
 	postRouter.Post("/", postHandler.CreatePost())
