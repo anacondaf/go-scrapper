@@ -1,3 +1,40 @@
 tmp
 app.env
 .idea
+
+### Ignore for src/js
+src/js/node_modules
+src/js/package-lock.json
+src/js/dist
+
+# Logs
+src/js/logs
+src/js/*.log
+src/js/npm-debug.log*
+src/js/pnpm-debug.log*
+src/js/yarn-debug.log*
+src/js/yarn-error.log*
+src/js/lerna-debug.log*
+
+# OS
+src/js/.DS_Store
+
+# Tests
+src/js/coverage
+src/js/.nyc_output
+
+# IDEs and editors
+src/js//.idea
+src/js/.project
+src/js/.classpath
+src/js/.c9/
+src/js/*.launch
+src/js/.settings/
+src/js/*.sublime-workspace
+
+# IDE - VSCode
+src/js/.vscode/*
+src/js/!.vscode/settings.json
+src/js/!.vscode/tasks.json
+src/js/!.vscode/extensions.json
+src/js/!.vscode/launch.json
