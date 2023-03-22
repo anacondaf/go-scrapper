@@ -1,5 +1,5 @@
 {
-  "ConnectionString": "postgresql://postgres:root@localhost:5432/vnexpress_crawler?sslmode=disable",
+  "ConnectionString": "postgresql://kai:kai123@localhost:5432/vnexpress_crawler?sslmode=disable",
   "GormConfig": {
     "NamingStrategy": {
       "TablePrefix": "crawler.",

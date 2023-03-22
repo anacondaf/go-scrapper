@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/goioc/di"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
@@ -28,6 +29,9 @@ func NewHttpServer() (*HttpServer, error) {
 
 func (s *HttpServer) setupApp() {
 	app := fiber.New(fiber.Config{AppName: "go-scrapper"})
+
+	// Default config
+	app.Use(cors.New())
 
 	v1 := app.Group("/api/v1")
 

@@ -1,6 +1,7 @@
 package post
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
 )
@@ -22,6 +23,8 @@ func (h *PostHandler) CreatePost() fiber.Handler {
 
 func (h *PostHandler) GetPosts() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		fmt.Println("Calling...")
+
 		post, err := h.postService.GetPosts()
 
 		if err != nil {
