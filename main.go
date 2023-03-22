@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/kainguyen/go-scrapper/src/core/application/http"
-	_ "github.com/kainguyen/go-scrapper/src/infrastructure/di"
 	"log"
+
+	"github.com/kainguyen/go-scrapper/src/core/application/http"
 )
 
 func main() {
