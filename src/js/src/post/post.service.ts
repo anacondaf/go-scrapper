@@ -1,4 +1,3 @@
-import {PostDTO, PostImages} from "./post.dto";
 import {ForbiddenException, Injectable} from "@nestjs/common";
 import {HttpService} from "@nestjs/axios";
 import {catchError, map} from 'rxjs';
@@ -15,16 +14,14 @@ export class PostService {
         return this._httpService
           .get('http://localhost:3000/api/v1/posts')
           .pipe(
-            map((res) => {
-                console.log(res);
-                return res.data;
-            }),
+	        map((res) => {
+	            return res.data;
+	        }),
+
+			catchError((err) => {
+				console.log(err);
+				throw new ForbiddenException('API not available');
+			}),
           )
-          .pipe(
-            catchError((err) => {
-                console.log(err);
-              throw new ForbiddenException('API not available');
-            }),
-          );
     }
 }

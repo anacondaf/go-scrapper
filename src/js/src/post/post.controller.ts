@@ -1,8 +1,9 @@
-import {Controller, Get} from "@nestjs/common";
-import {PostService} from "./post.service";
-import {PostDTO} from "./post.dto";
+import { Controller, Get } from "@nestjs/common";
+import { PostService } from "./post.service";
 
-@Controller()
+@Controller({
+    version: "1"
+})
 export class PostController {
     private readonly _postService: PostService
 

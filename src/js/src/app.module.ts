@@ -1,5 +1,4 @@
-import {Module, Post} from '@nestjs/common';
-import { AppController } from './app.controller';
+import {Module} from '@nestjs/common';
 import {ConfigModule} from "@nestjs/config";
 import {PostModule} from "./post/post.module";
 import {RouterModule} from "@nestjs/core";
@@ -14,7 +13,7 @@ import {RouterModule} from "@nestjs/core";
       }]),
       ConfigModule.forRoot()
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [],
 })
 
