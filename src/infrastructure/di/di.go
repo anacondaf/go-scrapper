@@ -1,4 +1,4 @@
-package di
+package DIContainer
 
 import (
 	"context"
@@ -6,13 +6,19 @@ import (
 	"github.com/goioc/di"
 	"github.com/kainguyen/go-scrapper/src/config"
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
+	"github.com/kainguyen/go-scrapper/src/core/application/http/post"
+	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/persistence/db"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/webScraping"
 	"github.com/kainguyen/go-scrapper/src/utils"
 	"log"
+	"reflect"
 )
 
-func init() {
+func ContainerRegister() {
+	_, _ = di.RegisterBean("postHandler", reflect.TypeOf((*post.PostHandler)(nil)))
+	_, _ = di.RegisterBean("postService", reflect.TypeOf((*service.PostService)(nil)))
+
 	config, err := config.LoadConfig(utils.GetWorkDirectory())
 	if err != nil {
 		log.Fatalf("Error When Loading Configuration: %v\n", err)
