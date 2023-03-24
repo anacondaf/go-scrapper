@@ -2,12 +2,12 @@ package main
 
 import (
 	"github.com/kainguyen/go-scrapper/src/core/application/http"
-	DIContainer "github.com/kainguyen/go-scrapper/src/infrastructure/di"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/di"
 	"log"
 )
 
 func main() {
-	DIContainer.ContainerRegister()
+	di.ContainerRegister()
 
 	server, err := http.NewHttpServer()
 	if err != nil {

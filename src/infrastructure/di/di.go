@@ -1,4 +1,4 @@
-package DIContainer
+package di
 
 import (
 	"context"
