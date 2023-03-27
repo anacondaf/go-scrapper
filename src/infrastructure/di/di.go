@@ -8,6 +8,7 @@ import (
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/persistence/cache"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/persistence/db"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/webScraping"
 	"github.com/kainguyen/go-scrapper/src/utils"
@@ -46,6 +47,20 @@ func ContainerRegister() {
 		}
 
 		return db, nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = di.RegisterBeanFactory("cache", di.Singleton, func(ctx context.Context) (interface{}, error) {
+		var newCache persistence.ICacheService = cache.NewCache(config)
+
+		cache, err := newCache.CacheConn()
+		if err != nil {
+			return nil, err
+		}
+
+		return cache, nil
 	})
 	if err != nil {
 		panic(err)

@@ -1,14 +1,15 @@
 package main
 
 import (
+	"log"
+
 	"github.com/kainguyen/go-scrapper/src/core/application/http"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/di"
-	"log"
 )
 
 func main() {
 	di.ContainerRegister()
-
+	
 	server, err := http.NewHttpServer()
 	if err != nil {
 		log.Fatalf("%v", err)

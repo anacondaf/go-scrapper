@@ -9,9 +9,9 @@ import (
 type Post struct {
 	domain.AuditableEntity
 
-	Id         uuid.UUID `gorm:"primaryKey;type:uuid;default:uuid_generate_v4()"`
-	Title      string
-	PostImages []PostImages
+	Id         uuid.UUID    `gorm:"primaryKey;type:uuid;default:uuid_generate_v4()" redis:"id"`
+	Title      string       `redis:"title"`
+	PostImages []PostImages `redis:"postImages"`
 }
 
 func (p *Post) BeforeCreate(tx *gorm.DB) (err error) {
