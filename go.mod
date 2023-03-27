@@ -8,6 +8,7 @@ require (
 	github.com/goioc/di v1.7.1
 	github.com/google/uuid v1.3.0
 	github.com/qustavo/dotsql v1.1.0
+	github.com/redis/go-redis/v9 v9.0.2
 	github.com/spf13/viper v1.15.0
 	gorm.io/driver/postgres v1.4.8
 	gorm.io/gorm v1.24.6
@@ -41,7 +42,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/philhofer/fwd v1.1.1 // indirect
-	github.com/redis/go-redis/v9 v9.0.2 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect

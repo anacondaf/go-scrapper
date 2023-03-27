@@ -1,0 +1,5 @@
+{
+  "Redis": {
+    "Address": "localhost:6379"
+  }
+}

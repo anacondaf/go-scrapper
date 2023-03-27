@@ -53,14 +53,8 @@ func ContainerRegister() {
 	}
 
 	_, err = di.RegisterBeanFactory("cache", di.Singleton, func(ctx context.Context) (interface{}, error) {
-		var newCache persistence.ICacheService = cache.NewCache(config)
-
-		cache, err := newCache.CacheConn()
-		if err != nil {
-			return nil, err
-		}
-
-		return cache, nil
+		var newCache persistence.ICacheService = cache.NewRedisCacheService(config)
+		return newCache, nil
 	})
 	if err != nil {
 		panic(err)

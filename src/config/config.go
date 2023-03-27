@@ -13,18 +13,34 @@ type database struct {
 	} `mapstructure:"GormConfig"`
 }
 
+type cache struct {
+	Redis struct {
+		Address string `mapstructure:"Address"`
+	} `mapstructure:"Redis"`
+}
+
 type Config struct {
 	database `mapstructure:",squash"`
+	cache    `mapstructure:",squash"`
 }
 
 func LoadConfig(path string) (*Config, error) {
 	viper.AddConfigPath(fmt.Sprintf("%v/src/config", path))
+
+	// Read database.json
 	viper.SetConfigName("database")
 	viper.SetConfigType("json")
 
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	// Read cache.json
+	viper.SetConfigName("cache")
+	err = viper.MergeInConfig()
 	if err != nil {
 		return nil, err
 	}
