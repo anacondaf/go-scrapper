@@ -42,8 +42,8 @@ func (p PostgresDB) LoadDefaultSQLCmd(db *gorm.DB) error {
 }
 
 func (p PostgresDB) DBConn() (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.New(postgres.Config{DSN: p.config.ConnectionString}), &gorm.Config{
-		NamingStrategy: p.config.GormConfig.NamingStrategy,
+	db, err := gorm.Open(postgres.New(postgres.Config{DSN: p.config.Database.ConnectionString}), &gorm.Config{
+		NamingStrategy: p.config.Database.GormConfig.NamingStrategy,
 	})
 
 	err = p.LoadDefaultSQLCmd(db)

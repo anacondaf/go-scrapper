@@ -17,7 +17,7 @@ type RedisCacheService struct {
 
 func NewRedisCacheService(config *config.Config) *RedisCacheService {
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: config.Redis.Address,
+		Addr: config.Cache.Address,
 		DB:   0,
 	})
 

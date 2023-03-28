@@ -14,9 +14,7 @@ type database struct {
 }
 
 type cache struct {
-	Redis struct {
-		Address string `mapstructure:"Address"`
-	} `mapstructure:"Redis"`
+	Address string `mapstructure:"Address"`
 }
 
 type rabbitmq struct {
@@ -24,9 +22,9 @@ type rabbitmq struct {
 }
 
 type Config struct {
-	database `mapstructure:",squash"`
-	cache    `mapstructure:",squash"`
-	rabbitmq `mapstructure:",squash"`
+	Database database `mapstructure:"Database"`
+	Cache    cache    `mapstructure:"Redis"`
+	Rabbitmq rabbitmq `mapstructure:"Rabbitmq"`
 }
 
 func LoadConfig(path string) (*Config, error) {
