@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {ConfigService} from "@nestjs/config";
-import {VersioningType} from "@nestjs/common";
+import { ConfigService } from '@nestjs/config';
+import { VersioningType } from '@nestjs/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,8 +14,23 @@ async function bootstrap() {
   });
 
   const configService = app.get(ConfigService);
-  const port = configService.get("PORT");
+  const PORT = configService.get('PORT');
+  const RABBITMQ_CONNECTION_STRING = configService.get(
+    'RABBITMQ_CONNECTION_STRING',
+  );
 
-  await app.listen(port);
+  await app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [RABBITMQ_CONNECTION_STRING],
+      queue: 'hello',
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
+
+  await app.listen(PORT);
 }
+
 bootstrap();
