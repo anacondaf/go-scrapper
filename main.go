@@ -2,57 +2,43 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
-
+	"github.com/goioc/di"
+	"github.com/kainguyen/go-scrapper/src/config"
 	"github.com/kainguyen/go-scrapper/src/core/application/http"
-	"github.com/kainguyen/go-scrapper/src/infrastructure/di"
-
-	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/messageBroker"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/serviceProvider"
+	"log"
 )
 
 func main() {
-	di.ContainerRegister()
+	serviceProvider.ContainerRegister()
 
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	config := di.GetInstance("config").(*config.Config)
+
+	rabbitmq, err := messageBroker.NewRabbitMq(config)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
 
-	defer conn.Close()
-
-	ch, err := conn.Channel()
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-
-	defer ch.Close()
-
-	fmt.Println("Connect RabbitMQ Success!")
+	producer := messageBroker.NewProducer(rabbitmq)
 
 	// Declare a queue to send message to
+	queue, err := producer.DeclareQueue(messageBroker.QueueObject{
+		QueueName:  "hello",
+		Durable:    false,
+		AutoDelete: false,
+		Exclusive:  false,
+		NoWait:     false,
+		Args:       nil,
+	})
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
 
-	q, err := ch.QueueDeclare(
-		"hello", // name
-		false,   // durable
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
-		nil,     // arguments
-	)
+	message := "Hello World"
 
 	// Publish message to queue q with name "hello"
-	body := "Hello World!"
-	err = ch.PublishWithContext(context.Background(),
-		"",     // exchange
-		q.Name, // routing key
-		false,  // mandatory
-		false,  // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(body),
-		})
-
+	err = producer.Publish(context.Background(), queue.Name, message)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
