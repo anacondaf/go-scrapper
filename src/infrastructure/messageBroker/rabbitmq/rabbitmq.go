@@ -1,4 +1,4 @@
-package messageBroker
+package rabbitmq
 
 import (
 	"fmt"
@@ -32,7 +32,18 @@ func NewRabbitMq(config *config.Config) (*RabbitMq, error) {
 	}, nil
 }
 
+func (mq *RabbitMq) DeclareQueue(queueObj QueueObject) (amqp.Queue, error) {
+	return mq.Channel.QueueDeclare(
+		queueObj.QueueName,
+		queueObj.Durable,
+		queueObj.AutoDelete,
+		queueObj.Exclusive,
+		queueObj.NoWait,
+		queueObj.Args,
+	)
+}
+
 // Close ...
-func (r *RabbitMq) Close() {
-	r.Connection.Close()
+func (mq *RabbitMq) Close() {
+	mq.Connection.Close()
 }

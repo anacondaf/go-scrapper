@@ -1,4 +1,4 @@
-package messageBroker
+package rabbitmq
 
 import (
 	"bytes"
@@ -14,30 +14,10 @@ type Producer struct {
 	rabbitmq *RabbitMq
 }
 
-type QueueObject struct {
-	QueueName  string
-	Durable    bool
-	AutoDelete bool
-	Exclusive  bool
-	NoWait     bool
-	Args       amqp.Table
-}
-
 func NewProducer(rabbitmq *RabbitMq) *Producer {
 	return &Producer{
 		rabbitmq,
 	}
-}
-
-func (p *Producer) DeclareQueue(queueObj QueueObject) (amqp.Queue, error) {
-	return p.rabbitmq.Channel.QueueDeclare(
-		queueObj.QueueName,
-		queueObj.Durable,
-		queueObj.AutoDelete,
-		queueObj.Exclusive,
-		queueObj.NoWait,
-		queueObj.Args,
-	)
 }
 
 func (p *Producer) Publish(context context.Context, routingKey string, message interface{}) error {
@@ -64,6 +44,8 @@ func (p *Producer) Publish(context context.Context, routingKey string, message i
 	if err != nil {
 		return errors.New(fmt.Sprintf("[messageBroker.Publish]: %v", err))
 	}
+
+	fmt.Printf("Publish to queue %s with message: \n %v\n", routingKey, b)
 
 	return nil
 }

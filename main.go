@@ -1,11 +1,9 @@
 package main
 
 import (
-	"context"
 	"github.com/goioc/di"
-	"github.com/kainguyen/go-scrapper/src/config"
 	"github.com/kainguyen/go-scrapper/src/core/application/http"
-	"github.com/kainguyen/go-scrapper/src/infrastructure/messageBroker"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/messageBroker/rabbitmq"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/serviceProvider"
 	"log"
 )
@@ -13,17 +11,12 @@ import (
 func main() {
 	serviceProvider.ContainerRegister()
 
-	config := di.GetInstance("config").(*config.Config)
+	mq := di.GetInstance("rabbitmq").(*rabbitmq.RabbitMq)
 
-	rabbitmq, err := messageBroker.NewRabbitMq(config)
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-
-	producer := messageBroker.NewProducer(rabbitmq)
+	//consumer := di.GetInstance("consumer").(*rabbitmq.Consumer)
 
 	// Declare a queue to send message to
-	queue, err := producer.DeclareQueue(messageBroker.QueueObject{
+	_, err := mq.DeclareQueue(rabbitmq.QueueObject{
 		QueueName:  "hello",
 		Durable:    false,
 		AutoDelete: false,
@@ -35,13 +28,16 @@ func main() {
 		log.Fatalf("%v", err)
 	}
 
-	message := "Hello World"
-
-	// Publish message to queue q with name "hello"
-	err = producer.Publish(context.Background(), queue.Name, message)
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
+	//msgs, err := consumer.Consume(queue.Name, "")
+	//if err != nil {
+	//	log.Fatalf("%v", err)
+	//}
+	//
+	//go func() {
+	//	for msg := range msgs {
+	//		log.Printf("Received a message: %s\n", msg.Body)
+	//	}
+	//}()
 
 	server, err := http.NewHttpServer()
 	if err != nil {
