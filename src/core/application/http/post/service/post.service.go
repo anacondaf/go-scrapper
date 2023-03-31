@@ -61,10 +61,19 @@ func (s *PostService) GetPosts() ([]models.Post, error) {
 
 	//err := <-errChannel
 
-	err := s.producer.Publish(context.Background(), "hello", postsDto)
-	if err != nil {
-		return nil, err
-	}
+	//err := s.producer.Publish(context.Background(), "hello", postsDto)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	return postsDto, nil
+}
+
+func (s *PostService) TestMessage() (string, error) {
+	err := s.producer.Publish(context.Background(), "hello", "Hello")
+	if err != nil {
+		return "", err
+	}
+
+	return "HelloWorld", nil
 }

@@ -45,3 +45,14 @@ func (h *PostHandler) GetPosts() fiber.Handler {
 		return c.Status(fiber.StatusOK).JSON(postsDto)
 	}
 }
+
+func (h *PostHandler) TestMessage() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		message, err := h.postService.TestMessage()
+		if err != nil {
+			return err
+		}
+
+		return c.Status(fiber.StatusOK).JSON(message)
+	}
+}

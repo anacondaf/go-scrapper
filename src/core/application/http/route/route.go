@@ -13,6 +13,7 @@ func Route(routeVer fiber.Router) {
 	postRouter := routeVer.Group("posts")
 	postRouter.Post("/", postHandler.CreatePost())
 	postRouter.Get("/", postHandler.GetPosts())
+	postRouter.Get("/testMessage", postHandler.TestMessage())
 
 	fmt.Println("Setup Endpoint Routing Success!")
 }

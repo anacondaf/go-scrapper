@@ -1,9 +1,8 @@
 package rabbitmq
 
 import (
-	"bytes"
 	"context"
-	"encoding/gob"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/kainguyen/go-scrapper/src/utils"
@@ -25,27 +24,32 @@ func (p *Producer) Publish(context context.Context, routingKey string, message i
 		return errors.New("[messageBroker.Publish]: routingKey is required")
 	}
 
-	var b bytes.Buffer
+	//var b bytes.Buffer
+	//
+	//if err := gob.NewEncoder(&b).Encode(message); err != nil {
+	//	return errors.New(fmt.Sprintf("[messageBroker.Publish]: %v", err))
+	//}
 
-	if err := gob.NewEncoder(&b).Encode(message); err != nil {
-		return errors.New(fmt.Sprintf("[messageBroker.Publish]: %v", err))
+	b, err := json.Marshal(message)
+	if err != nil {
+		return err
 	}
 
-	err := p.rabbitmq.Channel.PublishWithContext(context,
+	err = p.rabbitmq.Channel.PublishWithContext(context,
 		"",         // exchange
 		routingKey, // routing key
 		false,      // mandatory
 		false,      // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        b.Bytes(),
+			Body:        b,
 		},
 	)
 	if err != nil {
 		return errors.New(fmt.Sprintf("[messageBroker.Publish]: %v", err))
 	}
 
-	fmt.Printf("Publish to queue %s with message: \n %v\n", routingKey, b)
+	fmt.Printf("Publish to queue %s success\n", routingKey)
 
 	return nil
 }
