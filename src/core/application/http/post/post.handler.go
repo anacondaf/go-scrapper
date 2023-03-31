@@ -6,11 +6,13 @@ import (
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
 	"github.com/kainguyen/go-scrapper/src/core/domain/models"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/messageBroker/rabbitmq"
 )
 
 type PostHandler struct {
 	postService  *service.PostService      `di.inject:"postService"`
 	cacheService persistence.ICacheService `di.inject:"cache"`
+	producer     *rabbitmq.Producer        `di.inject:"producer"`
 }
 
 func (h *PostHandler) CreatePost() fiber.Handler {
@@ -42,17 +44,16 @@ func (h *PostHandler) GetPosts() fiber.Handler {
 			return err
 		}
 
-		return c.Status(fiber.StatusOK).JSON(postsDto)
-	}
-}
-
-func (h *PostHandler) TestMessage() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		message, err := h.postService.TestMessage()
+		err = h.producer.Publish(context.Background(), "hello", rabbitmq.NewMessage("post", postsDto))
 		if err != nil {
-			return err
+			return c.Status(fiber.StatusInternalServerError).JSON(err)
 		}
 
-		return c.Status(fiber.StatusOK).JSON(message)
+		err = h.producer.Publish(context.Background(), "hello", rabbitmq.NewMessage("hello_message", postsDto))
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(err)
+		}
+
+		return c.Status(fiber.StatusOK).JSON(postsDto)
 	}
 }

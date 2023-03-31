@@ -26,9 +26,13 @@ export class PostController {
     return this._postService.getAllPosts();
   }
 
-  @EventPattern()
+  @EventPattern('post')
+  getAllPostsNotification(@Payload() data: any, @Ctx() context: RmqContext) {
+    console.log(data);
+  }
+
+  @EventPattern('hello_message')
   getEventMessage(@Payload() data: any, @Ctx() context: RmqContext) {
     console.log('Some event has been sent!');
-    console.log(data);
   }
 }

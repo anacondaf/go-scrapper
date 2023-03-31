@@ -2,9 +2,9 @@ package rabbitmq
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/serializer"
 	"github.com/kainguyen/go-scrapper/src/utils"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -24,13 +24,7 @@ func (p *Producer) Publish(context context.Context, routingKey string, message i
 		return errors.New("[messageBroker.Publish]: routingKey is required")
 	}
 
-	//var b bytes.Buffer
-	//
-	//if err := gob.NewEncoder(&b).Encode(message); err != nil {
-	//	return errors.New(fmt.Sprintf("[messageBroker.Publish]: %v", err))
-	//}
-
-	b, err := json.Marshal(message)
+	buffer, err := serializer.Marshal(message)
 	if err != nil {
 		return err
 	}
@@ -42,7 +36,7 @@ func (p *Producer) Publish(context context.Context, routingKey string, message i
 		false,      // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        b,
+			Body:        buffer,
 		},
 	)
 	if err != nil {
