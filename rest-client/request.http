@@ -21,8 +21,3 @@ Content-Type: application/json
 
 GET localhost:3000/api/v1/posts
 Accept: application/json
-
-###
-
-GET localhost:3000/api/v1/posts/testMessage
-Accept: application/json

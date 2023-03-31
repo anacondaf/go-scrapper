@@ -32,12 +32,12 @@ func (r RedisCacheService) GetOrSet(ctx context.Context, key string, expiration 
 	if err == redis.Nil {
 		fmt.Println("Key does not exist. Start write key")
 
-		value, err := cb()
+		data, err := cb()
 		if err != nil {
 			return nil, err
 		}
 
-		bytesData, err := json.Marshal(value)
+		bytesData, err := json.Marshal(data)
 
 		r.redisClient.Set(ctx, key, bytesData, expiration)
 
