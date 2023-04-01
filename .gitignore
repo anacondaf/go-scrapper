@@ -2,6 +2,8 @@ tmp
 app.env
 .idea
 
+.volume
+
 ### Ignore for src/js
 src/js/node_modules
 src/js/package-lock.json
