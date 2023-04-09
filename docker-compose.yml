@@ -11,6 +11,8 @@ services:
       - "15672:15672"
     volumes:
       - /var/lib/rabbitmq
+    networks:
+      - node-network
 
   portainer:
     image: portainer/portainer-ce:latest
@@ -21,3 +23,19 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./.volume/portainer/data:/data
+    networks:
+      - node-network
+
+  redis:
+    image: redis/redis-stack:latest
+    container_name: redis
+    ports:
+      - "8001:8001"
+      - "6379:6379"
+    restart: on-failure
+    networks:
+      - node-network
+
+networks:
+  node-network:
+    driver: bridge

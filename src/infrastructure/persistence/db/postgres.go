@@ -38,6 +38,11 @@ func (p PostgresDB) LoadDefaultSQLCmd(db *gorm.DB) error {
 		return err
 	}
 
+	_, err = dot.Exec(sqlDB, "create-database")
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
