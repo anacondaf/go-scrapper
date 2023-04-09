@@ -18,11 +18,12 @@ go mod tidy
 ```
 
 ## Usage
+
 To run and use this repository, follow these steps:
 
-* Running Postgres server
-* Create app.env file and copy all contents from .env.example
-* Run by:
+- Running Postgres server
+- Create app.env file and copy all contents from .env.example
+- Run by:
 
 ```bash
 # Using golang air
@@ -33,7 +34,21 @@ go run main.go
 
 ```
 
+## Run App
+
+Use docker compose to start all services
+
+```bash
+docker compose up -d
+```
+
+<details>
+    <summary>Portainer</summary>
+    1. User: admin | Password: P@$$word!
+</details>
+
 ## Features
+
 - [x] Written in Golang
 - [x] HTTP Framework - Go Fiber
 - [x] ORM - Gorm
