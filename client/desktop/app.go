@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
@@ -11,34 +12,21 @@ import (
 )
 
 func main() {
-	a := app.New()
-	window := a.NewWindow("Hello World")
+	myApp := app.New()
+	myWindow := myApp.NewWindow("Container")
+	myWindow.Resize(fyne.NewSize(500, 500))
 
-	window.Resize(fyne.NewSize(400, 400))
+	green := color.NRGBA{R: 0, G: 180, B: 0, A: 255}
 
-	window.SetContent(
-		container.NewVBox(
-			redButton(),
-			redButton(),
-			redButton(),
-			redButton(),
-		))
+	text := canvas.NewText("Hello World", green)
+	textContainer := container.New(layout.NewCenterLayout(), text)
 
-	window.ShowAndRun()
-}
+	button := widget.NewButton("Click me", func() {
+		fmt.Println("Yes I am clicked!")
+	})
 
-// first colored button
-func redButton() *fyne.Container {
-	btn := widget.NewButton("Visit", nil)
+	content := container.New(layout.NewVBoxLayout(), textContainer, button)
 
-	btnColor := canvas.NewRectangle(color.NRGBA{R: 255, G: 0, B: 0, A: 255})
-
-	container1 := container.New(
-		layout.NewMaxLayout(),
-		btnColor,
-		btn,
-	)
-
-	// our button is ready
-	return container1
+	myWindow.SetContent(content)
+	myWindow.ShowAndRun()
 }
