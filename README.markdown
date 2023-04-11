@@ -17,6 +17,17 @@ git clone git@github.com:anacondaf/go-scrapper.git
 go mod tidy
 ```
 
+* Install [swaggo](https://github.com/swaggo/swag)
+```bash
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+
+* To generate swagger document for http service
+
+```go
+swag init -g ./src/core/application/http/server.go
+```
+
 ## Usage
 
 To run and use this repository, follow these steps:
@@ -42,6 +53,7 @@ Use docker compose to start all services
 docker compose up -d
 ```
 
+## Accounts
 <details>
     <summary>Portainer</summary>
     1. User: admin | Password: P@$$word!
