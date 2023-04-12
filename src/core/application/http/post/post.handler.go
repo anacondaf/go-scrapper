@@ -15,6 +15,16 @@ type PostHandler struct {
 	producer     *rabbitmq.Producer        `di.inject:"producer"`
 }
 
+// Create New Post godoc
+//
+//	@Summary		Create post
+//	@Description	Create post
+//	@Tags			posts
+//	@Accept			json
+//	@Produce		json
+//	@Param			post	body	service.createPostRequest	true "URL of the website you want to crawl" example(string)
+//	@Success		200	{object}	[]models.Post
+//	@Router			/posts [post]
 func (h *PostHandler) CreatePost() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		post, err := h.postService.CreatePost(c)
@@ -26,6 +36,16 @@ func (h *PostHandler) CreatePost() fiber.Handler {
 	}
 }
 
+// Get All Posts godoc
+//
+//	@Summary		Get all posts
+//	@Description	Get all posts
+//	@Tags			posts
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	[]models.Post
+//	@Failure		500	{object}	error
+//	@Router			/posts [get]
 func (h *PostHandler) GetPosts() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
