@@ -88,3 +88,18 @@ func (r RedisCacheService) Map(mapValue []byte, dto interface{}) error {
 func (r RedisCacheService) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
 	return r.redisClient.Set(ctx, key, value, expiration)
 }
+
+func (r RedisCacheService) Delete(ctx context.Context, keys ...string) error {
+	pipeline := r.redisClient.Pipeline()
+
+	for _, key := range keys {
+		pipeline.Del(ctx, key)
+	}
+
+	_, err := pipeline.Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

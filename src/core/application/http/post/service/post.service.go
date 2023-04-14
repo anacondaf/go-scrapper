@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
+	"github.com/kainguyen/go-scrapper/src/core/domain/enums"
 	"github.com/kainguyen/go-scrapper/src/core/domain/models"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/messageBroker/rabbitmq"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/webScraping"
@@ -42,6 +43,11 @@ func (s *PostService) CreatePost(c *fiber.Ctx) (webScraping.Post, error) {
 	}
 
 	s.db.Create(postDTO)
+
+	err = s.cacheService.Delete(context.Background(), enums.POST_KEY)
+	if err != nil {
+		return webScraping.Post{}, err
+	}
 
 	return post, nil
 }
