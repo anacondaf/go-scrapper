@@ -21,10 +21,15 @@ type rabbitmq struct {
 	ConnectionString string `mapstructure:"ConnectionString"`
 }
 
+type sentry struct {
+	DSN string `mapstructure:"DSN"`
+}
+
 type Config struct {
 	Database database `mapstructure:"Database"`
 	Cache    cache    `mapstructure:"Redis"`
 	Rabbitmq rabbitmq `mapstructure:"Rabbitmq"`
+	Sentry   sentry   `mapstructure:"Sentry"`
 }
 
 func LoadConfig(path string) (*Config, error) {
@@ -50,6 +55,13 @@ func LoadConfig(path string) (*Config, error) {
 
 	// Read rabbitmq.json
 	viper.SetConfigName("rabbitmq")
+	err = viper.MergeInConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	// Read sentry.json
+	viper.SetConfigName("sentry")
 	err = viper.MergeInConfig()
 	if err != nil {
 		return nil, err
