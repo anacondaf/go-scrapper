@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/goioc/di"
-	"github.com/kainguyen/go-scrapper/internal"
 	"github.com/kainguyen/go-scrapper/src/config"
 	"github.com/kainguyen/go-scrapper/src/core/application/http"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/apm"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/messageBroker/rabbitmq"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/serviceProvider"
 	"log"
@@ -17,7 +17,7 @@ func main() {
 
 	cfg := di.GetInstance("config").(*config.Config)
 
-	err = internal.SetupSentry(cfg)
+	err = apm.SetupSentry(cfg)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
