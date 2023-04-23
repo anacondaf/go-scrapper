@@ -4,8 +4,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
+	"github.com/gofiber/websocket/v2"
 	_ "github.com/kainguyen/go-scrapper/docs"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/route"
+	"github.com/kainguyen/go-scrapper/src/core/application/http/wss"
 )
 
 //	@title			Fiber Example API
@@ -31,6 +33,17 @@ func NewHttpServer() (*HttpServer, error) {
 	return server, nil
 }
 
+func upgradeWebsocket() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		if websocket.IsWebSocketUpgrade(c) {
+			c.Locals("allowed", true)
+			return c.Next()
+		}
+
+		return fiber.ErrUpgradeRequired
+	}
+}
+
 func (s *HttpServer) setupApp() {
 	app := fiber.New(fiber.Config{AppName: "go-scrapper"})
 
@@ -38,6 +51,8 @@ func (s *HttpServer) setupApp() {
 	app.Use(cors.New())
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
+
+	app.Get("/ws", upgradeWebsocket(), wss.WebsocketHandler())
 
 	v1 := app.Group("/api/v1")
 
