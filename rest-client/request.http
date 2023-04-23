@@ -9,15 +9,5 @@ Content-Type: application/json
 
 ###
 
-POST localhost:3000/api/v1/posts
-Content-Type: application/json
-
-{
-"url": "https://vnexpress.net/lewandowski-barca-can-thang-truoc-khi-nghi-den-thang-dep-4583007.html"
-}
-
-
-###
-
 GET localhost:3000/api/v1/posts
 Accept: application/json
