@@ -36,6 +36,27 @@ services:
     networks:
       - node-network
 
+  postgres:
+    image: postgres:latest
+    container_name: postgres-scrapper
+    ports:
+      - "5432:5432"
+    restart: on-failure
+    env_file:
+      - docker.env
+    volumes:
+      - ./resources/db:/home
+    networks:
+      - node-network
+
+volumes:
+  postgres:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/resources/db'
+
 networks:
   node-network:
     driver: bridge
