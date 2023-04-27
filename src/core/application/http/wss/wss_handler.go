@@ -31,6 +31,5 @@ func WebsocketHandler() fiber.Handler {
 				break
 			}
 		}
-
 	})
 }
