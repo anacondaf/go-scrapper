@@ -8,6 +8,7 @@ import (
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
+	"github.com/kainguyen/go-scrapper/src/core/application/wss"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/messageBroker/rabbitmq"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/persistence/cache"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/persistence/db"
@@ -53,10 +54,12 @@ func ContainerRegister() {
 		panic(err)
 	}
 
-	_, err = di.RegisterBeanFactory("cache", di.Singleton, func(ctx context.Context) (interface{}, error) {
-		var newCache persistence.ICacheService = cache.NewRedisCacheService(config)
-		return newCache, nil
-	})
+	var redisService persistence.IRedisService = cache.NewRedisCacheService(config)
+	if err != nil {
+		log.Fatalf("Error When Loading Configuration: %v\n", err)
+	}
+
+	_, err = di.RegisterBeanInstance("redis", redisService)
 	if err != nil {
 		panic(err)
 	}
@@ -73,7 +76,7 @@ func ContainerRegister() {
 	}
 
 	_, err = di.RegisterBeanFactory("producer", di.Singleton, func(ctx context.Context) (interface{}, error) {
-		var producer *rabbitmq.Producer = rabbitmq.NewProducer(mq)
+		var producer = rabbitmq.NewProducer(mq)
 		return producer, nil
 	})
 	if err != nil {
@@ -81,8 +84,16 @@ func ContainerRegister() {
 	}
 
 	_, err = di.RegisterBeanFactory("consumer", di.Singleton, func(ctx context.Context) (interface{}, error) {
-		var consumer *rabbitmq.Consumer = rabbitmq.NewConsumer(mq)
+		var consumer = rabbitmq.NewConsumer(mq)
 		return consumer, nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = di.RegisterBeanFactory("websocket", di.Singleton, func(ctx context.Context) (interface{}, error) {
+		var websocket = wss.NewWebsocket(redisService)
+		return websocket, nil
 	})
 	if err != nil {
 		panic(err)
