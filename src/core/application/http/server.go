@@ -4,10 +4,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
-	"github.com/gofiber/websocket/v2"
+	"github.com/goioc/di"
 	_ "github.com/kainguyen/go-scrapper/docs"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/route"
-	"github.com/kainguyen/go-scrapper/src/core/application/http/wss"
+	"github.com/kainguyen/go-scrapper/src/core/application/wss"
 )
 
 //	@title			Fiber Example API
@@ -22,26 +22,20 @@ import (
 //	@BasePath		/api/v1
 
 type HttpServer struct {
-	app *fiber.App
+	app       *fiber.App
+	websocket *wss.Websocket `di.inject:"websocket"`
 }
 
 func NewHttpServer() (*HttpServer, error) {
-	server := &HttpServer{}
+	websocket := di.GetInstance("websocket").(*wss.Websocket)
+
+	server := &HttpServer{
+		websocket: websocket,
+	}
 
 	server.setupApp()
 
 	return server, nil
-}
-
-func upgradeWebsocket() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		if websocket.IsWebSocketUpgrade(c) {
-			c.Locals("allowed", true)
-			return c.Next()
-		}
-
-		return fiber.ErrUpgradeRequired
-	}
 }
 
 func (s *HttpServer) setupApp() {
@@ -52,7 +46,7 @@ func (s *HttpServer) setupApp() {
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
-	app.Get("/ws", upgradeWebsocket(), wss.WebsocketHandler())
+	app.Get("/ws", s.websocket.UpgradeWebsocket(), s.websocket.Handler())
 
 	v1 := app.Group("/api/v1")
 

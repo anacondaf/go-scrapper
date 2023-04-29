@@ -14,7 +14,7 @@ import (
 type PostService struct {
 	scraper      *webScraping.WebScraper   `di.inject:"webScraper"`
 	db           *gorm.DB                  `di.inject:"db"`
-	cacheService persistence.ICacheService `di.inject:"cache"`
+	redisService persistence.IRedisService `di.inject:"redis"`
 	producer     *rabbitmq.Producer        `di.inject:"producer"`
 }
 
@@ -44,7 +44,7 @@ func (s *PostService) CreatePost(c *fiber.Ctx) (webScraping.Post, error) {
 
 	s.db.Create(postDTO)
 
-	err = s.cacheService.Delete(context.Background(), enums.POST_KEY)
+	err = s.redisService.Delete(context.Background(), enums.POST_KEY)
 	if err != nil {
 		return webScraping.Post{}, err
 	}

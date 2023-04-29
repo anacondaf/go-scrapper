@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"github.com/kainguyen/go-scrapper/src/config"
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
+	"github.com/kainguyen/go-scrapper/src/infrastructure/serializer"
 	"github.com/redis/go-redis/v9"
+	"log"
 	"time"
 )
 
@@ -37,7 +39,11 @@ func (r RedisCacheService) GetOrSet(ctx context.Context, key string, expiration 
 			return nil, err
 		}
 
-		bytesData, err := json.Marshal(data)
+		bytesData, err := serializer.Marshal(data)
+
+		if err != nil {
+			return nil, err
+		}
 
 		r.redisClient.Set(ctx, key, bytesData, expiration)
 
@@ -54,6 +60,10 @@ func (r RedisCacheService) GetOrSet(ctx context.Context, key string, expiration 
 
 func (r RedisCacheService) Get(ctx context.Context, key string, needMap bool, dto interface{}) (*redis.StringCmd, error) {
 	getVal := r.redisClient.Get(ctx, key)
+
+	if !needMap {
+		return getVal, getVal.Err()
+	}
 
 	if needMap && getVal.Err() != redis.Nil {
 		byteData, err := getVal.Bytes()
@@ -86,7 +96,14 @@ func (r RedisCacheService) Map(mapValue []byte, dto interface{}) error {
 }
 
 func (r RedisCacheService) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
-	return r.redisClient.Set(ctx, key, value, expiration)
+	log.Printf("CacheService: Set Value For Key %v\n", key)
+
+	bytes, err := serializer.Marshal(value)
+	if err != nil {
+		return nil
+	}
+
+	return r.redisClient.Set(ctx, key, bytes, expiration)
 }
 
 func (r RedisCacheService) Delete(ctx context.Context, keys ...string) error {
@@ -102,4 +119,8 @@ func (r RedisCacheService) Delete(ctx context.Context, keys ...string) error {
 	}
 
 	return nil
+}
+
+func (r RedisCacheService) HSet(ctx context.Context, key string, setValue ...interface{}) *redis.IntCmd {
+	return r.redisClient.HSet(ctx, key, setValue)
 }
