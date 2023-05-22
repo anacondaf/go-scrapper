@@ -2,7 +2,7 @@ package rabbitmq
 
 import (
 	"errors"
-	"github.com/kainguyen/go-scrapper/src/utils"
+	"github.com/kainguyen/go-scrapper/src/utils/constants"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -17,7 +17,7 @@ func NewConsumer(rabbitmq *RabbitMq) *Consumer {
 }
 
 func (c *Consumer) Consume(routingKey string, consumer string) (<-chan amqp.Delivery, error) {
-	if routingKey == utils.EMPTY_STRING {
+	if routingKey == constants.EMPTY_STRING {
 		return nil, errors.New("[messageBroker.Publish]: routingKey is required")
 	}
 

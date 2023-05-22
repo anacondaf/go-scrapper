@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/serializer"
-	"github.com/kainguyen/go-scrapper/src/utils"
+	"github.com/kainguyen/go-scrapper/src/utils/constants"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -20,7 +20,7 @@ func NewProducer(rabbitmq *RabbitMq) *Producer {
 }
 
 func (p *Producer) Publish(context context.Context, routingKey string, message interface{}) error {
-	if routingKey == utils.EMPTY_STRING {
+	if routingKey == constants.EMPTY_STRING {
 		return errors.New("[messageBroker.Publish]: routingKey is required")
 	}
 
