@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package domain;
+
+option go_package = "/pb";
+
+import "google/protobuf/timestamp.proto";
+
+message AuditableEntity {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ModifiedAt = 2;
+}
