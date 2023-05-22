@@ -1,4 +1,4 @@
-tmp
+tmp/build-errors.log
 app.env
 .idea
 
