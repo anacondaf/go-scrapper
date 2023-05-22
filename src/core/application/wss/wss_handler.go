@@ -26,7 +26,7 @@ func NewWebsocket(cacheService persistence.IRedisService) *Websocket {
 	}
 }
 
-func (w *Websocket) UpgradeWebsocket() fiber.Handler {
+func (w *Websocket) upgradeWebsocket() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
@@ -39,7 +39,9 @@ func (w *Websocket) UpgradeWebsocket() fiber.Handler {
 	}
 }
 
-func (w *Websocket) Handler() fiber.Handler {
+func (w *Websocket) JoinRoom() fiber.Handler {
+	w.upgradeWebsocket()
+
 	return websocket.New(func(socket *websocket.Conn) {
 		client := NewClient(socket, w.Room)
 
@@ -48,5 +50,13 @@ func (w *Websocket) Handler() fiber.Handler {
 
 		go client.write()
 		client.read()
+	})
+}
+
+func (w *Websocket) ListAllClients() fiber.Handler {
+	w.upgradeWebsocket()
+
+	return websocket.New(func(socket *websocket.Conn) {
+		w.Room.ListClients()
 	})
 }

@@ -4,10 +4,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
-	"github.com/goioc/di"
 	_ "github.com/kainguyen/go-scrapper/docs"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/route"
-	"github.com/kainguyen/go-scrapper/src/core/application/wss"
 )
 
 //	@title			Fiber Example API
@@ -22,16 +20,12 @@ import (
 //	@BasePath		/api/v1
 
 type HttpServer struct {
-	app       *fiber.App
-	websocket *wss.Websocket `di.inject:"websocket"`
+	app *fiber.App
 }
 
 func NewHttpServer() (*HttpServer, error) {
-	websocket := di.GetInstance("websocket").(*wss.Websocket)
 
-	server := &HttpServer{
-		websocket: websocket,
-	}
+	server := &HttpServer{}
 
 	server.setupApp()
 
@@ -46,11 +40,13 @@ func (s *HttpServer) setupApp() {
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
-	app.Get("/ws", s.websocket.UpgradeWebsocket(), s.websocket.Handler())
-
 	v1 := app.Group("/api/v1")
 
 	route.Route(v1)
+
+	wssRouter := app.Group("/ws")
+
+	route.WebsocketRoute(wssRouter)
 
 	s.app = app
 }

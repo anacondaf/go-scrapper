@@ -45,8 +45,8 @@ func (r *Room) Run() {
 }
 
 func (r *Room) ListClients() {
-	for i, _ := range r.Clients {
-		fmt.Printf("%s\n", i)
+	for _, client := range r.Clients {
+		fmt.Printf("Id: %v | Room: %v\n", client.Id, client.Room.Id)
 	}
 }
 
