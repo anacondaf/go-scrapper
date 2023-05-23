@@ -49,6 +49,15 @@ services:
     networks:
       - node-network
 
+  # A gRPC web-based client
+  grpcox:
+    image: gusaul/grpcox:latest
+    container_name: grpcox
+    ports:
+      - 6969:6969
+    volumes:
+      - ./.volume/logs:/log
+
 volumes:
   postgres:
     driver: local
