@@ -56,7 +56,7 @@ func (p PostgresDB) DBConn() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = db.AutoMigrate(&models.Post{}, &models.PostImages{})
+	err = db.AutoMigrate(&models.Post{}, &models.PostImage{})
 	if err != nil {
 		return nil, err
 	}
