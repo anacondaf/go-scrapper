@@ -35,11 +35,11 @@ func (s *PostService) CreatePost(c *fiber.Ctx) (webScraping.Post, error) {
 
 	var postDTO = &models.Post{
 		Title:      post.Title,
-		PostImages: []models.PostImages{},
+		PostImages: []models.PostImage{},
 	}
 
 	for _, image := range post.Images {
-		postDTO.PostImages = append(postDTO.PostImages, models.PostImages{Url: image})
+		postDTO.PostImages = append(postDTO.PostImages, models.PostImage{Url: image})
 	}
 
 	s.db.Create(postDTO)

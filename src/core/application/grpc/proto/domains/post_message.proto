@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package domain;
 
-option go_package = "/pb";
+option go_package = ".;pb";
 
 import "domains/auditableEntity_message.proto";
 
@@ -10,6 +10,7 @@ message Post {
   AuditableEntity Audit = 1;
   string Id = 2;
   string Title = 3;
+  repeated PostImage PostImages = 4;
 }
 
 message PostImage {

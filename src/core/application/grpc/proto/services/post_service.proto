@@ -2,17 +2,26 @@ syntax = "proto3";
 
 package service;
 
-option go_package = "/pb";
+option go_package = ".;pb";
 
 import "domains/post_message.proto";
 
 service PostService {
   rpc GetPosts(GetPostsRequest) returns (GetPostsResponse);
+  rpc GetPostById(GetPostByIdRequest) returns (GetPostByIdResponse);
 }
 
 message GetPostsRequest {
 }
 
 message GetPostsResponse {
-  domain.Post Posts = 1;
+  repeated domain.Post Posts = 1;
+}
+
+message GetPostByIdRequest {
+  string PostId = 1;
+}
+
+message GetPostByIdResponse {
+  domain.Post Post = 1;
 }

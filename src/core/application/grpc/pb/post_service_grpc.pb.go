@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PostServiceClient interface {
 	GetPosts(ctx context.Context, in *GetPostsRequest, opts ...grpc.CallOption) (*GetPostsResponse, error)
+	GetPostById(ctx context.Context, in *GetPostByIdRequest, opts ...grpc.CallOption) (*GetPostByIdResponse, error)
 }
 
 type postServiceClient struct {
@@ -42,11 +43,21 @@ func (c *postServiceClient) GetPosts(ctx context.Context, in *GetPostsRequest, o
 	return out, nil
 }
 
+func (c *postServiceClient) GetPostById(ctx context.Context, in *GetPostByIdRequest, opts ...grpc.CallOption) (*GetPostByIdResponse, error) {
+	out := new(GetPostByIdResponse)
+	err := c.cc.Invoke(ctx, "/service.PostService/GetPostById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
 type PostServiceServer interface {
 	GetPosts(context.Context, *GetPostsRequest) (*GetPostsResponse, error)
+	GetPostById(context.Context, *GetPostByIdRequest) (*GetPostByIdResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedPostServiceServer struct {
 
 func (UnimplementedPostServiceServer) GetPosts(context.Context, *GetPostsRequest) (*GetPostsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPosts not implemented")
+}
+func (UnimplementedPostServiceServer) GetPostById(context.Context, *GetPostByIdRequest) (*GetPostByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostById not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 
@@ -88,6 +102,24 @@ func _PostService_GetPosts_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_GetPostById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetPostById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.PostService/GetPostById",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetPostById(ctx, req.(*GetPostByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPosts",
 			Handler:    _PostService_GetPosts_Handler,
+		},
+		{
+			MethodName: "GetPostById",
+			Handler:    _PostService_GetPostById_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
