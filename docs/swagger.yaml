@@ -10,12 +10,12 @@ definitions:
         type: string
       postImages:
         items:
-          $ref: '#/definitions/models.PostImages'
+          $ref: '#/definitions/models.PostImage'
         type: array
       title:
         type: string
     type: object
-  models.PostImages:
+  models.PostImage:
     properties:
       createdAt:
         type: string
