@@ -1,16 +1,34 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"github.com/goioc/di"
 	"github.com/kainguyen/go-scrapper/src/config"
+	"github.com/kainguyen/go-scrapper/src/core/application/grpc/pb"
+	grpc_service "github.com/kainguyen/go-scrapper/src/core/application/grpc/services"
 	"github.com/kainguyen/go-scrapper/src/core/application/http"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/apm"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/messageBroker/rabbitmq"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/serviceProvider"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"gorm.io/gorm"
 	"log"
+	"net"
+	"sync"
+)
+
+var (
+	// Flag
+	grpcPort = flag.Int("p", 8000, "grpc port")
 )
 
 func main() {
+	wg := sync.WaitGroup{}
+
+	flag.Parse()
+
 	var err error
 
 	serviceProvider.ContainerRegister()
@@ -37,6 +55,20 @@ func main() {
 		log.Fatalf("%v", err)
 	}
 
+	wg.Add(1)
+
+	go startGrpcServer(&wg)
+
+	wg.Add(1)
+
+	go startHttpServer(&wg)
+
+	wg.Wait()
+}
+
+func startHttpServer(wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	server, err := http.NewHttpServer()
 	if err != nil {
 		log.Fatalf("%v", err)
@@ -45,5 +77,33 @@ func main() {
 	err = server.StartApp(":3000")
 	if err != nil {
 		log.Fatalf("%v", err)
+	}
+}
+
+func startGrpcServer(wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	hostname := "localhost:"
+	address := fmt.Sprintf("%v%d", hostname, *grpcPort)
+
+	listener, err := net.Listen("tcp", address)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+
+	var opts []grpc.ServerOption
+
+	grpcServer := grpc.NewServer(opts...)
+
+	var postService = grpc_service.NewPostServiceServer(di.GetInstance("db").(*gorm.DB))
+
+	pb.RegisterPostServiceServer(grpcServer, postService)
+
+	reflection.Register(grpcServer)
+
+	fmt.Printf("GRPC Server is served at %s\n", address)
+
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatalf("Cannot start grpc server: %v", err)
 	}
 }
