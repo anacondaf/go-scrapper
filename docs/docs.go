@@ -106,7 +106,7 @@ const docTemplate = `{
                 "postImages": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.PostImages"
+                        "$ref": "#/definitions/models.PostImage"
                     }
                 },
                 "title": {
@@ -114,7 +114,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.PostImages": {
+        "models.PostImage": {
             "type": "object",
             "properties": {
                 "createdAt": {

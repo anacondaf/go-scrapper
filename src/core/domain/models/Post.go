@@ -11,7 +11,7 @@ type Post struct {
 
 	Id         uuid.UUID `gorm:"primaryKey;type:uuid;default:uuid_generate_v4()"`
 	Title      string
-	PostImages []PostImages `gorm:"constraint:OnDelete:CASCADE"`
+	PostImages []PostImage `gorm:"constraint:OnDelete:CASCADE"`
 }
 
 func (p *Post) BeforeCreate(tx *gorm.DB) (err error) {
@@ -19,7 +19,7 @@ func (p *Post) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-type PostImages struct {
+type PostImage struct {
 	domain.AuditableEntity
 
 	Id     uuid.UUID `gorm:"primaryKey;type:uuid;uuid_generate_v4()"`
@@ -27,7 +27,7 @@ type PostImages struct {
 	PostId uuid.UUID
 }
 
-func (pi *PostImages) BeforeCreate(tx *gorm.DB) (err error) {
+func (pi *PostImage) BeforeCreate(tx *gorm.DB) (err error) {
 	pi.Id = uuid.New()
 	return
 }
