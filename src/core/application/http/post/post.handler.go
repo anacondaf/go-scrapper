@@ -3,7 +3,6 @@ package post
 import (
 	"context"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
 	"github.com/kainguyen/go-scrapper/src/core/application/wss"
@@ -52,20 +51,20 @@ func (h *PostHandler) CreatePost() fiber.Handler {
 //	@Router			/posts [get]
 func (h *PostHandler) GetPosts() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var clientsId []string
+		//var clientsId []string
+		//
+		//_, err := h.redisService.Get(context.Background(), enums.WSS_CLIENTS, true, &clientsId)
+		//if err != nil {
+		//	return err
+		//}
 
-		_, err := h.redisService.Get(context.Background(), enums.WSS_CLIENTS, true, &clientsId)
-		if err != nil {
-			return err
-		}
-
-		id, err := uuid.Parse(clientsId[1])
-
-		h.websocket.Room.Clients[id].Receive <- []byte("Xin chao")
+		//id, err := uuid.Parse(clientsId[1])
+		//
+		//h.websocket.Room.Clients[id].Receive <- []byte("Xin chao")
 
 		var postsDto []models.Post
 
-		_, err = h.redisService.GetOrSet(context.Background(), enums.POST_KEY, 0, &postsDto, persistence.Callback(func(...interface{}) (interface{}, error) {
+		_, err := h.redisService.GetOrSet(context.Background(), enums.POST_KEY, 0, &postsDto, persistence.Callback(func(...interface{}) (interface{}, error) {
 			post, err := h.postService.GetPosts()
 			if err != nil {
 				return nil, err

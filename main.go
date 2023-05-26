@@ -5,15 +5,13 @@ import (
 	"fmt"
 	"github.com/goioc/di"
 	"github.com/kainguyen/go-scrapper/src/config"
-	"github.com/kainguyen/go-scrapper/src/core/application/grpc/pb"
-	grpc_service "github.com/kainguyen/go-scrapper/src/core/application/grpc/services"
+	grpcservice "github.com/kainguyen/go-scrapper/src/core/application/grpc/services/register"
 	"github.com/kainguyen/go-scrapper/src/core/application/http"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/apm"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/messageBroker/rabbitmq"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/serviceProvider"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"gorm.io/gorm"
 	"log"
 	"net"
 	"sync"
@@ -95,9 +93,7 @@ func startGrpcServer(wg *sync.WaitGroup) {
 
 	grpcServer := grpc.NewServer(opts...)
 
-	var postService = grpc_service.NewPostServiceServer(di.GetInstance("db").(*gorm.DB))
-
-	pb.RegisterPostServiceServer(grpcServer, postService)
+	grpcservice.RegisterServices(grpcServer)
 
 	reflection.Register(grpcServer)
 

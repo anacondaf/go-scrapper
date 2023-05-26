@@ -6,6 +6,7 @@ import (
 	"github.com/goioc/di"
 	"github.com/kainguyen/go-scrapper/src/config"
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
+	grpcservice "github.com/kainguyen/go-scrapper/src/core/application/grpc/services"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/post/service"
 	"github.com/kainguyen/go-scrapper/src/core/application/wss"
@@ -17,6 +18,10 @@ import (
 	"log"
 	"reflect"
 )
+
+func RegisterGrpcServiceServer() {
+	_, _ = di.RegisterBean("postServiceServer", reflect.TypeOf((*grpcservice.PostServiceServer)(nil)))
+}
 
 func ContainerRegister() {
 	_, _ = di.RegisterBean("postHandler", reflect.TypeOf((*post.PostHandler)(nil)))
@@ -98,6 +103,8 @@ func ContainerRegister() {
 	if err != nil {
 		panic(err)
 	}
+
+	RegisterGrpcServiceServer()
 
 	_ = di.InitializeContainer()
 }
