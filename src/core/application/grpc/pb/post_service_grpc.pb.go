@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type PostServiceClient interface {
 	GetPosts(ctx context.Context, in *GetPostsRequest, opts ...grpc.CallOption) (*GetPostsResponse, error)
 	GetPostById(ctx context.Context, in *GetPostByIdRequest, opts ...grpc.CallOption) (*GetPostByIdResponse, error)
+	GetPostByIds(ctx context.Context, in *GetPostByIdsRequest, opts ...grpc.CallOption) (PostService_GetPostByIdsClient, error)
 }
 
 type postServiceClient struct {
@@ -52,12 +53,45 @@ func (c *postServiceClient) GetPostById(ctx context.Context, in *GetPostByIdRequ
 	return out, nil
 }
 
+func (c *postServiceClient) GetPostByIds(ctx context.Context, in *GetPostByIdsRequest, opts ...grpc.CallOption) (PostService_GetPostByIdsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PostService_ServiceDesc.Streams[0], "/service.PostService/GetPostByIds", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &postServiceGetPostByIdsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type PostService_GetPostByIdsClient interface {
+	Recv() (*GetPostByIdsResponse, error)
+	grpc.ClientStream
+}
+
+type postServiceGetPostByIdsClient struct {
+	grpc.ClientStream
+}
+
+func (x *postServiceGetPostByIdsClient) Recv() (*GetPostByIdsResponse, error) {
+	m := new(GetPostByIdsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
 type PostServiceServer interface {
 	GetPosts(context.Context, *GetPostsRequest) (*GetPostsResponse, error)
 	GetPostById(context.Context, *GetPostByIdRequest) (*GetPostByIdResponse, error)
+	GetPostByIds(*GetPostByIdsRequest, PostService_GetPostByIdsServer) error
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -70,6 +104,9 @@ func (UnimplementedPostServiceServer) GetPosts(context.Context, *GetPostsRequest
 }
 func (UnimplementedPostServiceServer) GetPostById(context.Context, *GetPostByIdRequest) (*GetPostByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPostById not implemented")
+}
+func (UnimplementedPostServiceServer) GetPostByIds(*GetPostByIdsRequest, PostService_GetPostByIdsServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetPostByIds not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 
@@ -120,6 +157,27 @@ func _PostService_GetPostById_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_GetPostByIds_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetPostByIdsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(PostServiceServer).GetPostByIds(m, &postServiceGetPostByIdsServer{stream})
+}
+
+type PostService_GetPostByIdsServer interface {
+	Send(*GetPostByIdsResponse) error
+	grpc.ServerStream
+}
+
+type postServiceGetPostByIdsServer struct {
+	grpc.ServerStream
+}
+
+func (x *postServiceGetPostByIdsServer) Send(m *GetPostByIdsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -136,6 +194,12 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PostService_GetPostById_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetPostByIds",
+			Handler:       _PostService_GetPostByIds_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "services/post_service.proto",
 }

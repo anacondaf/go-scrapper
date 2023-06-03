@@ -9,6 +9,7 @@ import "domains/post_message.proto";
 service PostService {
   rpc GetPosts(GetPostsRequest) returns (GetPostsResponse);
   rpc GetPostById(GetPostByIdRequest) returns (GetPostByIdResponse);
+  rpc GetPostByIds(GetPostByIdsRequest) returns (stream GetPostByIdsResponse);
 }
 
 message GetPostsRequest {
@@ -25,3 +26,12 @@ message GetPostByIdRequest {
 message GetPostByIdResponse {
   domain.Post Post = 1;
 }
+
+message GetPostByIdsRequest {
+  repeated string PostIds = 1;
+}
+
+message GetPostByIdsResponse {
+  domain.Post Post = 1;
+}
+
