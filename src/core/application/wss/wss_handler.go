@@ -1,28 +1,30 @@
 package wss
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	"github.com/google/uuid"
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
-	"log"
+	"github.com/rs/zerolog"
 )
 
 type Websocket struct {
 	Room         *Room
 	cacheService persistence.IRedisService
+	logger       *zerolog.Logger
 }
 
-func NewWebsocket(cacheService persistence.IRedisService) *Websocket {
+func NewWebsocket(cacheService persistence.IRedisService, logger *zerolog.Logger) *Websocket {
 	room := NewRoom(uuid.New(), cacheService)
 
 	go room.Run()
-	fmt.Println("Establish websocket")
+
+	logger.Info().Msg("Establish websocket")
 
 	return &Websocket{
 		Room:         room,
 		cacheService: cacheService,
+		logger:       logger,
 	}
 }
 
@@ -30,7 +32,7 @@ func (w *Websocket) upgradeWebsocket() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
-			log.Println("socket is connected")
+			w.logger.Info().Msg("Socket Is Connected")
 
 			return c.Next()
 		}

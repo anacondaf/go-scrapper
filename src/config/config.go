@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 	"gorm.io/gorm/schema"
 )
@@ -32,7 +33,7 @@ type Config struct {
 	Sentry   sentry   `mapstructure:"Sentry"`
 }
 
-func LoadConfig(path string) (*Config, error) {
+func LoadConfig(path string, logger *zerolog.Logger) (*Config, error) {
 	viper.AddConfigPath(fmt.Sprintf("%v/src/config", path))
 
 	// Read database.json
@@ -75,6 +76,6 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 
-	fmt.Println("Load config success!")
+	logger.Info().Msg("Load Config Success")
 	return &config, nil
 }

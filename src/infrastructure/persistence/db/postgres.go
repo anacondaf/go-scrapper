@@ -6,16 +6,18 @@ import (
 	"github.com/kainguyen/go-scrapper/src/core/domain/models"
 	"github.com/kainguyen/go-scrapper/src/utils"
 	"github.com/qustavo/dotsql"
+	"github.com/rs/zerolog"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type PostgresDB struct {
 	config *config.Config
+	logger *zerolog.Logger
 }
 
-func NewPostgresDB(config *config.Config) *PostgresDB {
-	return &PostgresDB{config: config}
+func NewPostgresDB(config *config.Config, logger *zerolog.Logger) *PostgresDB {
+	return &PostgresDB{config: config, logger: logger}
 }
 
 func (p PostgresDB) LoadDefaultSQLCmd(db *gorm.DB) error {
@@ -62,11 +64,11 @@ func (p PostgresDB) DBConn() (*gorm.DB, error) {
 	}
 
 	if err != nil {
-		fmt.Printf("Error when connect db: %v\n", err)
+		p.logger.Error().Err(err).Msg("Error when connect db")
 		return nil, err
 	}
 
-	fmt.Println("DB Connect Success!")
+	p.logger.Info().Msg("DB Connect Success")
 
 	return db, nil
 }

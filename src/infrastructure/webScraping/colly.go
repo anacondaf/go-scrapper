@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gocolly/colly"
 	"github.com/kainguyen/go-scrapper/src/config"
-	"log"
+	"github.com/rs/zerolog"
 )
 
 type Post struct {
@@ -14,9 +14,10 @@ type Post struct {
 
 type WebScraper struct {
 	*colly.Collector
+	logger *zerolog.Logger
 }
 
-func NewWebScraper(config *config.Config, opts ...func(c *colly.Collector)) *WebScraper {
+func NewWebScraper(config *config.Config, logger *zerolog.Logger, opts ...func(c *colly.Collector)) *WebScraper {
 	collector := colly.NewCollector(opts...)
 
 	//storage := &postgres.Storage{
@@ -27,20 +28,20 @@ func NewWebScraper(config *config.Config, opts ...func(c *colly.Collector)) *Web
 	//
 	//collector.SetStorage(storage)
 
-	return &WebScraper{collector}
+	return &WebScraper{collector, logger}
 }
 
 func (s *WebScraper) VnExpressCrawler(url string) Post {
 	s.OnRequest(func(request *colly.Request) {
-		fmt.Println("Visiting", request.URL)
+		s.logger.Info().Msg(fmt.Sprintf("Visiting %v", request.URL))
 	})
 
 	s.OnError(func(_ *colly.Response, err error) {
-		log.Println("Something went wrong:", err)
+		s.logger.Fatal().Err(err).Msg("Something Went Wrong")
 	})
 
 	s.OnResponse(func(r *colly.Response) {
-		fmt.Println("Visited", r.Request.URL)
+		s.logger.Info().Msg(fmt.Sprintf("Visited %v", r.Request.URL))
 	})
 
 	var blog = Post{

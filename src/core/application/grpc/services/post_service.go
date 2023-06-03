@@ -3,6 +3,7 @@ package grpcservice
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
 	"github.com/kainguyen/go-scrapper/src/core/application/grpc/pb"
@@ -12,6 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
+	"time"
 )
 
 type PostServiceServer struct {
@@ -41,4 +43,40 @@ func (ps *PostServiceServer) GetPosts(ctx context.Context, _ *pb.GetPostsRequest
 	}
 
 	return &pb.GetPostsResponse{Posts: pbPost}, nil
+}
+
+func (ps *PostServiceServer) GetPostByIds(req *pb.GetPostByIdsRequest, stream pb.PostService_GetPostByIdsServer) error {
+
+	for _, id := range req.GetPostIds() {
+		parsedId, err := uuid.Parse(id)
+		if err != nil {
+			return err
+		}
+
+		var post models.Post
+
+		tx := ps.db.First(&post, parsedId)
+
+		if tx.RowsAffected != 0 {
+			var pbPost pb.Post
+
+			err := copier.Copy(&pbPost, &post)
+			if err != nil {
+				return status.Errorf(codes.Internal, fmt.Sprintf("Unexpected Error: %v", err))
+			}
+
+			res := &pb.GetPostByIdsResponse{
+				Post: &pbPost,
+			}
+			err = stream.Send(res)
+
+			if err != nil {
+				return status.Errorf(codes.Internal, fmt.Sprintf("Unexpected Error: %v", err))
+			}
+		}
+
+		time.Sleep(time.Second * 5)
+	}
+
+	return nil
 }

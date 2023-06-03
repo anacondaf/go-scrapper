@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/swagger"
 	_ "github.com/kainguyen/go-scrapper/docs"
 	"github.com/kainguyen/go-scrapper/src/core/application/http/route"
+	"github.com/rs/zerolog"
 )
 
 //	@title			Fiber Example API
@@ -20,12 +21,15 @@ import (
 //	@BasePath		/api/v1
 
 type HttpServer struct {
-	app *fiber.App
+	logger *zerolog.Logger
+	app    *fiber.App
 }
 
-func NewHttpServer() (*HttpServer, error) {
+func NewHttpServer(logger *zerolog.Logger) (*HttpServer, error) {
 
-	server := &HttpServer{}
+	server := &HttpServer{
+		logger: logger,
+	}
 
 	server.setupApp()
 
@@ -42,7 +46,7 @@ func (s *HttpServer) setupApp() {
 
 	v1 := app.Group("/api/v1")
 
-	route.Route(v1)
+	route.HttpRoute(v1, s.logger)
 
 	wssRouter := app.Group("/ws")
 

@@ -43,7 +43,7 @@ func (p *Producer) Publish(context context.Context, routingKey string, message i
 		return errors.New(fmt.Sprintf("[messageBroker.Publish]: %v", err))
 	}
 
-	fmt.Printf("Publish to queue %s success\n", routingKey)
+	p.rabbitmq.logger.Info().Msg(fmt.Sprintf("Publish to queue %s success\n", routingKey))
 
 	return nil
 }

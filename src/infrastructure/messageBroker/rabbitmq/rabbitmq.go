@@ -1,17 +1,18 @@
 package rabbitmq
 
 import (
-	"fmt"
 	"github.com/kainguyen/go-scrapper/src/config"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/rs/zerolog"
 )
 
 type RabbitMq struct {
 	Connection *amqp.Connection
 	Channel    *amqp.Channel
+	logger     *zerolog.Logger
 }
 
-func NewRabbitMq(config *config.Config) (*RabbitMq, error) {
+func NewRabbitMq(config *config.Config, logger *zerolog.Logger) (*RabbitMq, error) {
 	var connectionString = config.Rabbitmq.ConnectionString
 
 	conn, err := amqp.Dial(connectionString)
@@ -24,7 +25,7 @@ func NewRabbitMq(config *config.Config) (*RabbitMq, error) {
 		return nil, err
 	}
 
-	fmt.Println("Connect RabbitMQ Success!")
+	logger.Info().Msg("Connect RabbitMQ Success")
 
 	return &RabbitMq{
 		Connection: conn,

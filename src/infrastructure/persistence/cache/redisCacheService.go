@@ -9,30 +9,31 @@ import (
 	"github.com/kainguyen/go-scrapper/src/core/application/common/persistence"
 	"github.com/kainguyen/go-scrapper/src/infrastructure/serializer"
 	"github.com/redis/go-redis/v9"
-	"log"
+	"github.com/rs/zerolog"
 	"time"
 )
 
 type RedisCacheService struct {
 	redisClient *redis.Client
+	logger      *zerolog.Logger
 }
 
-func NewRedisCacheService(config *config.Config) *RedisCacheService {
+func NewRedisCacheService(config *config.Config, logger *zerolog.Logger) *RedisCacheService {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr: config.Cache.Address,
 		DB:   0,
 	})
 
-	fmt.Println("Cache Connect Success!")
+	logger.Info().Msg("Cache Connect Success")
 
-	return &RedisCacheService{redisClient: redisClient}
+	return &RedisCacheService{redisClient: redisClient, logger: logger}
 }
 
 func (r RedisCacheService) GetOrSet(ctx context.Context, key string, expiration time.Duration, dto interface{}, cb persistence.Callback) (interface{}, error) {
 	mappedValue, err := r.Get(ctx, key, true, dto)
 
 	if err == redis.Nil {
-		fmt.Println("Key does not exist. Start write key")
+		r.logger.Info().Msg("Key does not exist. Start writing key")
 
 		data, err := cb()
 		if err != nil {
@@ -96,7 +97,7 @@ func (r RedisCacheService) Map(mapValue []byte, dto interface{}) error {
 }
 
 func (r RedisCacheService) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
-	log.Printf("CacheService: Set Value For Key %v\n", key)
+	r.logger.Info().Msg(fmt.Sprintf("CacheService: Set Value For Key %v\n", key))
 
 	bytes, err := serializer.Marshal(value)
 	if err != nil {
