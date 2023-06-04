@@ -23,6 +23,15 @@ func RegisterGrpcServiceServer() {
 	_, _ = di.RegisterBean("postServiceServer", reflect.TypeOf((*grpcservice.PostServiceServer)(nil)))
 }
 
+func RegisterLogger(logger *zerolog.Logger) error {
+	_, err := di.RegisterBeanInstance("logger", logger)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func ContainerRegister(logger *zerolog.Logger) error {
 	_, _ = di.RegisterBean("postHandler", reflect.TypeOf((*post.PostHandler)(nil)))
 	_, _ = di.RegisterBean("postService", reflect.TypeOf((*service.PostService)(nil)))
@@ -105,6 +114,11 @@ func ContainerRegister(logger *zerolog.Logger) error {
 	}
 
 	RegisterGrpcServiceServer()
+
+	err = RegisterLogger(logger)
+	if err != nil {
+		return err
+	}
 
 	_ = di.InitializeContainer()
 
