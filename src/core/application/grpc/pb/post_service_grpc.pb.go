@@ -25,6 +25,7 @@ type PostServiceClient interface {
 	GetPosts(ctx context.Context, in *GetPostsRequest, opts ...grpc.CallOption) (*GetPostsResponse, error)
 	GetPostById(ctx context.Context, in *GetPostByIdRequest, opts ...grpc.CallOption) (*GetPostByIdResponse, error)
 	GetPostByIds(ctx context.Context, in *GetPostByIdsRequest, opts ...grpc.CallOption) (PostService_GetPostByIdsClient, error)
+	UploadPostImage(ctx context.Context, opts ...grpc.CallOption) (PostService_UploadPostImageClient, error)
 }
 
 type postServiceClient struct {
@@ -85,6 +86,40 @@ func (x *postServiceGetPostByIdsClient) Recv() (*GetPostByIdsResponse, error) {
 	return m, nil
 }
 
+func (c *postServiceClient) UploadPostImage(ctx context.Context, opts ...grpc.CallOption) (PostService_UploadPostImageClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PostService_ServiceDesc.Streams[1], "/service.PostService/UploadPostImage", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &postServiceUploadPostImageClient{stream}
+	return x, nil
+}
+
+type PostService_UploadPostImageClient interface {
+	Send(*UploadImageRequest) error
+	CloseAndRecv() (*UploadImageResponse, error)
+	grpc.ClientStream
+}
+
+type postServiceUploadPostImageClient struct {
+	grpc.ClientStream
+}
+
+func (x *postServiceUploadPostImageClient) Send(m *UploadImageRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *postServiceUploadPostImageClient) CloseAndRecv() (*UploadImageResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(UploadImageResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
@@ -92,6 +127,7 @@ type PostServiceServer interface {
 	GetPosts(context.Context, *GetPostsRequest) (*GetPostsResponse, error)
 	GetPostById(context.Context, *GetPostByIdRequest) (*GetPostByIdResponse, error)
 	GetPostByIds(*GetPostByIdsRequest, PostService_GetPostByIdsServer) error
+	UploadPostImage(PostService_UploadPostImageServer) error
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -107,6 +143,9 @@ func (UnimplementedPostServiceServer) GetPostById(context.Context, *GetPostByIdR
 }
 func (UnimplementedPostServiceServer) GetPostByIds(*GetPostByIdsRequest, PostService_GetPostByIdsServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetPostByIds not implemented")
+}
+func (UnimplementedPostServiceServer) UploadPostImage(PostService_UploadPostImageServer) error {
+	return status.Errorf(codes.Unimplemented, "method UploadPostImage not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 
@@ -178,6 +217,32 @@ func (x *postServiceGetPostByIdsServer) Send(m *GetPostByIdsResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _PostService_UploadPostImage_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(PostServiceServer).UploadPostImage(&postServiceUploadPostImageServer{stream})
+}
+
+type PostService_UploadPostImageServer interface {
+	SendAndClose(*UploadImageResponse) error
+	Recv() (*UploadImageRequest, error)
+	grpc.ServerStream
+}
+
+type postServiceUploadPostImageServer struct {
+	grpc.ServerStream
+}
+
+func (x *postServiceUploadPostImageServer) SendAndClose(m *UploadImageResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *postServiceUploadPostImageServer) Recv() (*UploadImageRequest, error) {
+	m := new(UploadImageRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -199,6 +264,11 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "GetPostByIds",
 			Handler:       _PostService_GetPostByIds_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "UploadPostImage",
+			Handler:       _PostService_UploadPostImage_Handler,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "services/post_service.proto",

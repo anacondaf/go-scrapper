@@ -10,6 +10,7 @@ service PostService {
   rpc GetPosts(GetPostsRequest) returns (GetPostsResponse);
   rpc GetPostById(GetPostByIdRequest) returns (GetPostByIdResponse);
   rpc GetPostByIds(GetPostByIdsRequest) returns (stream GetPostByIdsResponse);
+  rpc UploadPostImage(stream UploadImageRequest) returns (UploadImageResponse);
 }
 
 message GetPostsRequest {
@@ -33,5 +34,22 @@ message GetPostByIdsRequest {
 
 message GetPostByIdsResponse {
   domain.Post Post = 1;
+}
+
+message UploadImageRequest {
+  oneof data {
+    ImageInfo Info = 1;
+    bytes ChunkData = 2;
+  };
+}
+
+message ImageInfo {
+  string PostId = 1;
+  string Type = 2;
+}
+
+message UploadImageResponse {
+  string Id = 1;
+  int64 Size = 2; // Size is the total of the stream of image bytes
 }
 
