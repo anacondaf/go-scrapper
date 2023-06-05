@@ -30,6 +30,7 @@ func NewRabbitMq(config *config.Config, logger *zerolog.Logger) (*RabbitMq, erro
 	return &RabbitMq{
 		Connection: conn,
 		Channel:    channel,
+		logger:     logger,
 	}, nil
 }
 
