@@ -1,5 +1,8 @@
 .PHONY: run-go-service run-nestjs-service gen-swagger swag-fmt mkdir-pb gen-grpc-linux gen-grpc-domain-linux gen-grpc-service-linux
 
+start-app:
+	go build -o ./tmp/main cmd/server/main.go
+
 run-go-service:
 	air
 
